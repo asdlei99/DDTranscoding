@@ -33,7 +33,7 @@ class WorkContainerProxy {
 private:
     WorkContainerProxy(){
     }
-    
+
     ~WorkContainerProxy() {
     }
     static std::thread* th;
@@ -47,15 +47,15 @@ public:
             msgQueue = new MessageQueue<ControllCmdContext>();
             proxy = new WorkContainerProxy();
             th = new std::thread(loop);
-            
+
         }
         return NULL;
     }
-    
+
     static WorkContainerProxy* getWorkContainerProxy() {
         return proxy;
     }
-    
+
     static void loop() {
         while(true) {
             ControllCmdContext controllCmdContext = msgQueue->read();
@@ -82,18 +82,20 @@ public:
             }
         }
     }
-    
+
     static void clearWork(std::string dst) {
         ControllCmdContext context = {CONTROLL_CMD_EXIT, "", dst};
         msgQueue->write(context);
     }
-    
+
     static void add(string src, string dst) {
         ControllCmdContext context = {CONTROLL_CMD_ADD, src, dst};
+        msgQueue->write(context);
     }
-    
+
     static void del(string dst) {
-        ControllCmdContext context = {CONTROLL_CMD_ADD, "", dst};
+        ControllCmdContext context = {CONTROLL_CMD_DEL, "", dst};
+        msgQueue->write(context);
     }
 };
 

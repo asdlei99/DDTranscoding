@@ -69,6 +69,7 @@ static int open_input_file(MediaContext* media_context, const char *filename)
 
 static int open_output_file(MediaContext* media_context, const char *filename)
 {
+    printf("fasdafsfasd \n");
     AVStream *out_stream;
     AVStream *in_stream;
     AVCodecContext *dec_ctx, *enc_ctx;
@@ -79,7 +80,14 @@ static int open_output_file(MediaContext* media_context, const char *filename)
     media_context->video_codec_copy = 0;
 
     media_context->ofmt_ctx = NULL;
-    avformat_alloc_output_context2(&(media_context->ofmt_ctx), NULL, "flv", filename);
+    AVOutputFormat* guss_format = av_guess_format(NULL, filename, NULL);
+    const char* format_name = NULL;
+    if(guss_format == NULL) {
+        if(strstr(filename, "rtmp") != NULL) {
+            format_name = "flv";
+        }
+    }
+    avformat_alloc_output_context2(&(media_context->ofmt_ctx), NULL, format_name, filename);
     if (!media_context->ofmt_ctx) {
         av_log(NULL, AV_LOG_ERROR, "Could not create output context\n");
         return AVERROR_UNKNOWN;
@@ -689,7 +697,7 @@ end:
 
     if (ret < 0)
         av_log(NULL, AV_LOG_ERROR, "Error occurred: %s\n", av_err2str(ret));
-    
+
     control_contex->running_flag = RUNNING_FLAG_STOPED;
     WorkContainerProxy* workerCnntainerProxy = WorkContainerProxy::getWorkContainerProxy();
     workerCnntainerProxy->clearWork(dst);
