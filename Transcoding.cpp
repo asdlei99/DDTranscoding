@@ -399,6 +399,15 @@ static int init_filters(MediaContext* media_context)
     return 0;
 }
 
+static int write_packet(MediaContext* media_context, unsigned int stream_index, AVPacket* pkt) {
+    int ret;
+    av_packet_rescale_ts(pkt,
+                         media_context->stream_ctx[stream_index].dec_ctx->time_base,
+                         media_context->ofmt_ctx->streams[stream_index]->time_base);
+    ret = av_interleaved_write_frame(media_context->ofmt_ctx, pkt);
+    return ret;
+}
+
 static int encode_write_frame(MediaContext* media_context, AVFrame *filt_frame, unsigned int stream_index, int *got_frame) {
     int ret;
     int got_frame_local;
@@ -629,6 +638,7 @@ int transcoding(const char* src, const char* dst, ControlContex* control_contex)
                 frame->pts = frame->best_effort_timestamp;
                 if(type == AVMEDIA_TYPE_VIDEO && media_context->video_codec_copy == 1) {
                     ret = encode_write_frame(media_context, frame, stream_index, NULL);
+                    //ret = write_packet(media_context, stream_index, &packet);
                 } else {
                     ret = filter_encode_write_frame(media_context, frame, stream_index);
                     av_frame_free(&frame);

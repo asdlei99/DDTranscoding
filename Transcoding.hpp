@@ -83,6 +83,8 @@ static int init_filters(MediaContext* media_context);
 
 static int encode_write_frame(MediaContext* media_context, AVFrame *filt_frame, unsigned int stream_index, int *got_frame);
 
+static int write_packet(MediaContext* media_context, unsigned int stream_index, AVPacket* pkt);
+
 static int add_samples_to_fifo(AVAudioFifo *fifo,
         uint8_t **converted_input_samples,
         const int frame_size);
