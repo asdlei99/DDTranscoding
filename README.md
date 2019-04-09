@@ -17,3 +17,10 @@
 {
 }
 ```
+
+## 编译方法
+
+```
+1.安装所有依赖的库：libffmpeg、libcjson、libssl、libcrypto、libevent
+2.确保所有的库都能被config
+```
