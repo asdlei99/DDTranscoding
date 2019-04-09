@@ -77,7 +77,7 @@ static int open_output_file(MediaContext* media_context, const char *filename)
     int ret;
     unsigned int i;
 
-    media_context->video_codec_copy = 0;
+    media_context->video_codec_copy = -1;
 
     media_context->ofmt_ctx = NULL;
     AVOutputFormat* guss_format = av_guess_format(NULL, filename, NULL);
@@ -112,9 +112,10 @@ static int open_output_file(MediaContext* media_context, const char *filename)
                 encoder = avcodec_find_encoder(AV_CODEC_ID_MP3);
                 //encoder = avcodec_find_encoder(AV_CODEC_ID_AC3);
             } else if(dec_ctx->codec_type == AVMEDIA_TYPE_VIDEO) {
-                if(dec_ctx->codec_id == AV_CODEC_ID_H264) {
-                    media_context->video_codec_copy = 1;
+                if(dec_ctx->codec_id == AV_CODEC_ID_H264 && media_context->video_codec_copy != -1) {
+                    media_context->video_codec_copy = i;
                 }
+                //这里encoder继续初始化 但是后面不用此encoder继续编码
                 encoder = avcodec_find_encoder(AV_CODEC_ID_H264);
                 //encoder = avcodec_find_encoder(AV_CODEC_ID_FLV1);
             } else {
@@ -636,9 +637,9 @@ int transcoding(const char* src, const char* dst, ControlContex* control_contex)
 
             if (got_frame) {
                 frame->pts = frame->best_effort_timestamp;
-                if(type == AVMEDIA_TYPE_VIDEO && media_context->video_codec_copy == 1) {
-                    ret = encode_write_frame(media_context, frame, stream_index, NULL);
-                    //ret = write_packet(media_context, stream_index, &packet);
+                if(type == AVMEDIA_TYPE_VIDEO && media_context->video_codec_copy == stream_index) {
+                    //ret = encode_write_frame(media_context, frame, stream_index, NULL);
+                    ret = write_packet(media_context, stream_index, &packet);
                 } else {
                     ret = filter_encode_write_frame(media_context, frame, stream_index);
                     av_frame_free(&frame);
