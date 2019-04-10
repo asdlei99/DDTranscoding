@@ -53,8 +53,9 @@ void EvHttpHandler::list(struct evhttp_request *req, void *arg)
     evbuffer_add_printf(buf, jsonStr);
     evhttp_send_reply(req, HTTP_OK, "OK", buf);
     evbuffer_free(buf);
+    
     free(jsonStr);
-    cJSON_free(retJson);
+    cJSON_Delete(retJson);
 }
 
 void EvHttpHandler::add(struct evhttp_request *req, void *arg)
@@ -70,10 +71,9 @@ void EvHttpHandler::add(struct evhttp_request *req, void *arg)
     
     string strBuf = "";
     while (evbuffer_get_length(readBuf)) {
-        int n = 0;
         char cbuf[128];
         memset(cbuf, 0, sizeof(cbuf));
-        n = evbuffer_remove(readBuf, cbuf, sizeof(cbuf) - 1);
+        evbuffer_remove(readBuf, cbuf, sizeof(cbuf) - 1);
         strBuf += cbuf;
     }
     
@@ -89,11 +89,11 @@ void EvHttpHandler::add(struct evhttp_request *req, void *arg)
     
     cJSON* retJson = HttpResult::success(NULL);
     char* retStr = cJSON_Print(retJson);
-    cJSON_free(reqJSON);
+    cJSON_Delete(reqJSON);
     evbuffer_add_printf(buf, retStr);
     evhttp_send_reply(req, HTTP_OK, "OK", buf);
     evbuffer_free(buf);
-    cJSON_free(retJson);
+    cJSON_Delete(retJson);
     free(retStr);
 }
 
@@ -110,10 +110,9 @@ void EvHttpHandler::del(struct evhttp_request *req, void *arg)
     
     string strBuf = "";
     while (evbuffer_get_length(readBuf)) {
-        int n = 0;
         char cbuf[128];
         memset(cbuf, 0, sizeof(cbuf));
-        n = evbuffer_remove(readBuf, cbuf, sizeof(cbuf) - 1);
+        evbuffer_remove(readBuf, cbuf, sizeof(cbuf) - 1);
         strBuf += cbuf;
     }
     
@@ -128,10 +127,10 @@ void EvHttpHandler::del(struct evhttp_request *req, void *arg)
     
     cJSON* retJson = HttpResult::success(NULL);
     char* retStr = cJSON_Print(retJson);
-    cJSON_free(reqJSON);
+    cJSON_Delete(reqJSON);
     evbuffer_add_printf(buf, retStr);
     evhttp_send_reply(req, HTTP_OK, "OK", buf);
     evbuffer_free(buf);
-    cJSON_free(retJson);
+    cJSON_Delete(retJson);
     free(retStr);
 }

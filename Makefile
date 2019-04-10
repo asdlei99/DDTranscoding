@@ -24,7 +24,7 @@ SRCS = $(wildcard ./*.cpp)
 HEADERS = $(wildcard ./*.hpp)
 
 DDTranscoding: $(SRCS) $(HEADERS)
-	$(CC) -o DDTranscoding $(SRCS) $(CFLAGS) $(FFMPEG_CFLAGS) $(FFMPEG_LDLIBS) $(OPENSSL_LDLIBS) $(OPENSSL_CFLAGS) $(EVENT_FLAGS) $(OTHER_FLAGS)
+	$(CC) -g -o DDTranscoding $(SRCS) $(CFLAGS) $(FFMPEG_CFLAGS) $(FFMPEG_LDLIBS) $(OPENSSL_LDLIBS) $(OPENSSL_CFLAGS) $(EVENT_FLAGS) $(OTHER_FLAGS)
 
 
 clean:

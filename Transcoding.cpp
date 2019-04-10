@@ -538,7 +538,7 @@ static int filter_encode_write_frame(MediaContext* media_context, AVFrame *frame
                         av_frame_free(&encode_frame);
                         break;
                     }
-                    ret = encode_write_frame(media_context, encode_frame, stream_index, NULL);
+                    encode_write_frame(media_context, encode_frame, stream_index, NULL);
                 }
             }
 

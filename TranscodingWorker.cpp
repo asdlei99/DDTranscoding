@@ -10,7 +10,6 @@
 #include "Utils.hpp"
 
 TranscodingWorker::TranscodingWorker() {
-    this->name = name;
 }
 
 TranscodingWorker::TranscodingWorker(string src, string dst) {
@@ -21,6 +20,7 @@ TranscodingWorker::TranscodingWorker(string src, string dst) {
 }
 
 TranscodingWorker::~TranscodingWorker() {
+    cout<<"~TranscodingWorker"<<endl;
     free(controlContext);
 }
 

@@ -33,6 +33,7 @@ bool WorkersContainer::clearWork(string dst) {
     if(transMap.count(name) > 0) {
         TranscodingWorker* transcodingWork = transMap[name];
         if(transcodingWork != NULL) {
+            //delete transcodingWork;
             transMap.erase(name);
             return true;
         }
