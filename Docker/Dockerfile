@@ -38,4 +38,5 @@ RUN g++ -g -o DDTranscoding ./Transcoding.cpp ./WorkersContainer.cpp ./main.cpp 
 
 RUN cp DDTranscoding /usr/local/sbin
 
+# config the so path
 RUN ldconfig
