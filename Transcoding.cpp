@@ -112,7 +112,7 @@ static int open_output_file(MediaContext* media_context, const char *filename)
                 encoder = avcodec_find_encoder(AV_CODEC_ID_MP3);
                 //encoder = avcodec_find_encoder(AV_CODEC_ID_AC3);
             } else if(dec_ctx->codec_type == AVMEDIA_TYPE_VIDEO) {
-                if(dec_ctx->codec_id == AV_CODEC_ID_H264 && media_context->video_codec_copy != -1) {
+                if(dec_ctx->codec_id == AV_CODEC_ID_H264 && media_context->video_codec_copy == -1) {
                     media_context->video_codec_copy = i;
                 }
                 //这里encoder继续初始化 但是后面不用此encoder继续编码
@@ -527,8 +527,9 @@ static int filter_encode_write_frame(MediaContext* media_context, AVFrame *frame
                     encode_frame->pkt_dts = filt_frame->pkt_dts;
 
                     if ((error = av_frame_get_buffer(encode_frame, 0)) < 0) {
+                        const char* err_str = av_err2str(error);
                         fprintf(stderr, "Could not allocate output frame samples (error '%s')\n",
-                                av_err2str(error));
+                                err_str);
                         av_frame_free(&encode_frame);
                         break;
                     }
@@ -575,6 +576,8 @@ static int flush_encoder(MediaContext* media_context, unsigned int stream_index)
 
 int transcoding(const char* src, const char* dst, ControlContex* control_contex)
 {
+    av_register_all();
+    avformat_network_init();
     MediaContext* media_context = (MediaContext*)malloc(sizeof(MediaContext));
     int ret;
     AVPacket packet = { .data = NULL, .size = 0 };
@@ -706,8 +709,10 @@ end:
     avformat_free_context(media_context->ofmt_ctx);
     free(media_context);
 
-    if (ret < 0)
-        av_log(NULL, AV_LOG_ERROR, "Error occurred: %s\n", av_err2str(ret));
+    if (ret < 0) {
+        const char* err_str = av_err2str(ret);
+        av_log(NULL, AV_LOG_ERROR, "Error occurred: %s\n", err_str);
+    }
 
     control_contex->running_flag = RUNNING_FLAG_STOPED;
     WorkContainerProxy* workerCnntainerProxy = WorkContainerProxy::getWorkContainerProxy();
