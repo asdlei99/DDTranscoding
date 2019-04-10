@@ -527,9 +527,8 @@ static int filter_encode_write_frame(MediaContext* media_context, AVFrame *frame
                     encode_frame->pkt_dts = filt_frame->pkt_dts;
 
                     if ((error = av_frame_get_buffer(encode_frame, 0)) < 0) {
-                        const char* err_str = av_err2str(error);
-                        fprintf(stderr, "Could not allocate output frame samples (error '%s')\n",
-                                err_str);
+                        fprintf(stderr, "Could not allocate output frame samples (error '%d')\n",
+                                error);
                         av_frame_free(&encode_frame);
                         break;
                     }
@@ -580,7 +579,9 @@ int transcoding(const char* src, const char* dst, ControlContex* control_contex)
     avformat_network_init();
     MediaContext* media_context = (MediaContext*)malloc(sizeof(MediaContext));
     int ret;
-    AVPacket packet = { .data = NULL, .size = 0 };
+    AVPacket packet;
+    packet.data = NULL;
+    packet.size = 0;
     AVFrame *frame = NULL;
     enum AVMediaType type;
     unsigned int stream_index;
@@ -710,8 +711,7 @@ end:
     free(media_context);
 
     if (ret < 0) {
-        const char* err_str = av_err2str(ret);
-        av_log(NULL, AV_LOG_ERROR, "Error occurred: %s\n", err_str);
+        av_log(NULL, AV_LOG_ERROR, "Error occurred: %d\n", ret);
     }
 
     control_contex->running_flag = RUNNING_FLAG_STOPED;
