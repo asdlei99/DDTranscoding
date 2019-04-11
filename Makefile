@@ -26,6 +26,8 @@ HEADERS = $(wildcard ./*.hpp)
 DDTranscoding: $(SRCS) $(HEADERS)
 	$(CC) -g -o DDTranscoding $(SRCS) $(CFLAGS) $(FFMPEG_CFLAGS) $(FFMPEG_LDLIBS) $(OPENSSL_LDLIBS) $(OPENSSL_CFLAGS) $(EVENT_FLAGS) $(OTHER_FLAGS) -lcjson -lpthread
 
+install:
+	cp DDTranscoding /usr/local/sbin
 
 clean:
 	rm -R *.o *.gch DDTranscoding DDTranscoding.dSYM
