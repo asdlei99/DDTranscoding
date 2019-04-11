@@ -14,6 +14,12 @@
 
 using namespace std;
 
+extern "C" {
+    #include <unistd.h>
+}
+
+using namespace std;
+
 static void msg_read(MessageQueue<int>* msg) {
     while(true) {
         cout<<msg->read()<<endl;
@@ -29,17 +35,14 @@ static void msg_write(MessageQueue<int>* msg) {
 }
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    /*
-    std::cout << "Hello, World!\n";
-    TranscodingWorker transcodingWorker("camera1", "rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov", "rtmp://127.0.0.1:1935/live/camera1");
-    cout<<"befor"<<endl;
-    transcodingWorker.start();
-    transcodingWorker.join();
-    cout<<"after"<<endl;
-     */
-    
-    HttpServer* httpServer = new HttpServer("0.0.0.0", 4253);
-    httpServer->dispatch();
+    int pid = fork();
+    if(pid < 0) {
+        perror("DDTranscoding start error");
+    } else if(pid == 0) {
+        cout<<"start DDTranscoding success!"<<endl;
+        setsid();
+        HttpServer* httpServer = new HttpServer("0.0.0.0", 4253);
+        httpServer->dispatch();
+    }
     return 0;
 }
