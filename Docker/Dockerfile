@@ -34,7 +34,7 @@ RUN git clone https://github.com/oujiangping/DDTranscoding.git
 
 WORKDIR /soft/DDTranscoding
 
-RUN g++ -g -o DDTranscoding ./Transcoding.cpp ./WorkersContainer.cpp ./main.cpp ./WorkContainerProxy.cpp ./MessageQueue.cpp ./BaseException.cpp ./Utils.cpp ./HttpResult.cpp ./HttpServer.cpp ./EvHttpHandler.cpp ./ErrorCode.cpp ./TranscodingWorker.cpp -Wall -g -fpermissive -std=c++11 -I/usr/local/include  -L/usr/local/lib -lavdevice -lavformat -lavfilter -lavcodec -lswresample -lswscale -lavutil  -lssl -lcrypto -lcjson -levent -lpthread
+RUN make
 
 RUN cp DDTranscoding /usr/local/sbin
 
