@@ -609,7 +609,12 @@ int transcoding(const char* src, const char* dst, ControlContex* control_contex)
         av_log(NULL, AV_LOG_DEBUG, "Demuxer gave frame of stream_index %u\n",
                 stream_index);
 
-        if (media_context->filter_ctx[stream_index].filter_graph) {
+        if(type == AVMEDIA_TYPE_VIDEO && media_context->video_codec_copy == stream_index) {
+            if(type == AVMEDIA_TYPE_VIDEO) {
+                media_context->stream_ctx[stream_index].enc_ctx->time_base = media_context->stream_ctx[stream_index].dec_ctx->time_base;
+            }
+            ret = write_packet(media_context, stream_index, &packet);
+        } else if(media_context->filter_ctx[stream_index].filter_graph) {
             av_log(NULL, AV_LOG_DEBUG, "Going to reencode&filter the frame\n");
             frame = av_frame_alloc();
             if (!frame) {
@@ -641,13 +646,9 @@ int transcoding(const char* src, const char* dst, ControlContex* control_contex)
 
             if (got_frame) {
                 frame->pts = frame->best_effort_timestamp;
-                if(type == AVMEDIA_TYPE_VIDEO && media_context->video_codec_copy == stream_index) {
-                    //ret = encode_write_frame(media_context, frame, stream_index, NULL);
-                    ret = write_packet(media_context, stream_index, &packet);
-                } else {
-                    ret = filter_encode_write_frame(media_context, frame, stream_index);
-                    av_frame_free(&frame);
-                }
+                ret = filter_encode_write_frame(media_context, frame, stream_index);
+                av_frame_free(&frame);
+                
                 if (ret < 0) {
                     continue;
                     //goto end;
