@@ -20,6 +20,7 @@ extern "C" {
 #include <libavutil/opt.h>
 #include <libavutil/pixdesc.h>
 #include <libavutil/audio_fifo.h>
+#include <libavutil/dict.h>
 }
 
 
@@ -46,6 +47,16 @@ typedef struct MediaContext {
     AVFormatContext *ofmt_ctx;
     int video_codec_copy;
 } MediaContext;
+
+static MediaContext* init_media_context() {
+    MediaContext* media_context = (MediaContext*)malloc(sizeof(MediaContext));
+    media_context->stream_ctx = NULL;
+    media_context->filter_ctx = NULL;
+    media_context->ifmt_ctx = NULL;
+    media_context->ofmt_ctx = NULL;
+    media_context->video_codec_copy = -1;
+    return media_context;
+}
 
 enum RUNNING_FLAG {
     RUNNING_FLAG_PREPARE = 0,
