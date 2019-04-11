@@ -610,6 +610,9 @@ int transcoding(const char* src, const char* dst, ControlContex* control_contex)
                 stream_index);
 
         if(type == AVMEDIA_TYPE_VIDEO && media_context->video_codec_copy == stream_index) {
+            av_packet_rescale_ts(&packet,
+                                 media_context->ifmt_ctx->streams[stream_index]->time_base,
+                                 media_context->stream_ctx[stream_index].dec_ctx->time_base);
             if(type == AVMEDIA_TYPE_VIDEO) {
                 media_context->stream_ctx[stream_index].enc_ctx->time_base = media_context->stream_ctx[stream_index].dec_ctx->time_base;
             }
