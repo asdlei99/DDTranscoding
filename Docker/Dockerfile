@@ -30,9 +30,12 @@ RUN make;make install
 
 WORKDIR /soft
 
+# clone ddtranscoding
 RUN git clone https://github.com/oujiangping/DDTranscoding.git
 
 WORKDIR /soft/DDTranscoding
+
+RUN git pull
 
 RUN make
 
